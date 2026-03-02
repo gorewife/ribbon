@@ -1,8 +1,8 @@
 {
-    "name": "my-bot",
+    "name": "vivix",
     "version": "1.0.0",
-    "author": "Kevin Novak",
-    "description": "A discord.js bot template written with TypeScript",
+    "author": "hystericca",
+    "description": "for vivi",
     "license": "MIT",
     "private": true,
     "engines": {
@@ -21,15 +21,15 @@
         "clean": "git clean -xdf --exclude=\"/config/**/*\"",
         "clean:dry": "git clean -xdf --exclude=\"/config/**/*\" --dry-run",
         "build": "tsc --project tsconfig.json",
-        "commands:view": "npm run build && node --enable-source-maps dist/start-bot.js commands view",
-        "commands:register": "npm run build && node --enable-source-maps dist/start-bot.js commands register",
-        "commands:rename": "npm run build && node --enable-source-maps dist/start-bot.js commands rename",
-        "commands:delete": "npm run build && node --enable-source-maps dist/start-bot.js commands delete",
-        "commands:clear": "npm run build && node --enable-source-maps dist/start-bot.js commands clear",
-        "start": "npm run start:bot",
-        "start:bot": "npm run build && node --enable-source-maps dist/start-bot.js",
-        "start:manager": "npm run build && node --enable-source-maps dist/start-manager.js",
-        "start:pm2": "npm run build && npm run pm2:start",
+        "commands:view": "bun run build && node --enable-source-maps dist/start-bot.js commands view",
+        "commands:register": "bun run build && node --enable-source-maps dist/start-bot.js commands register",
+        "commands:rename": "bun run build && node --enable-source-maps dist/start-bot.js commands rename",
+        "commands:delete": "bun run build && node --enable-source-maps dist/start-bot.js commands delete",
+        "commands:clear": "bun run build && node --enable-source-maps dist/start-bot.js commands clear",
+        "start": "bun run start:bot",
+        "start:bot": "bun run build && node --enable-source-maps dist/start-bot.js",
+        "start:manager": "bun run build && node --enable-source-maps dist/start-manager.js",
+        "start:pm2": "bun run build && bun run pm2:start",
         "pm2:start": "pm2 start process.json",
         "pm2:stop": "pm2 stop process.json",
         "pm2:delete": "pm2 delete process.json",
@@ -71,6 +71,7 @@
         "prettier": "^3.6.2",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.40.0",
-        "vitest": "^3.2.4"
+        "vitest": "^3.2.4",
+        "@types/bun": "latest"
     }
 }

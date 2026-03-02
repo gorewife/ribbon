@@ -1,22 +1,13 @@
-FROM node:16
+FROM oven/bun:1
 
-# Create app directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
-# Install packages
-RUN npm install
-
-# Copy the app code
 COPY . .
+RUN bun run build
 
-# Build the project
-RUN npm run build
-
-# Expose ports
 EXPOSE 3001
 
-# Run the application
-CMD [ "node", "dist/start-manager.js" ]
+CMD ["bun", "dist/start-manager.js"]
