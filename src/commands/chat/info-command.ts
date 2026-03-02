@@ -27,14 +27,12 @@ export class InfoCommand implements Command {
             }
             case InfoOption.TRANSLATE: {
                 embed = Lang.getEmbed('displayEmbeds.translate', data.lang);
-                for (let langCode of Language.Enabled) {
-                    embed.addFields([
-                        {
-                            name: Language.Data[langCode].nativeName,
-                            value: Lang.getRef('meta.translators', langCode),
-                        },
-                    ]);
-                }
+                embed.addFields([
+                    {
+                        name: Language.Data[Language.Default].nativeName,
+                        value: Lang.getRef('meta.translators', Language.Default),
+                    },
+                ]);
                 break;
             }
             default: {

@@ -22,6 +22,7 @@ vi.mock('../../src/utils/index.js', () => ({
 
 vi.mock('../../src/services/index.js', () => ({
     Lang: {
+        getRef: vi.fn().mockImplementation((key: string) => key.split('.').pop() ?? key),
         getEmbed: vi.fn().mockReturnValue({ title: 'Mock Embed' }),
     },
 }));

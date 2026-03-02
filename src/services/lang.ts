@@ -1,4 +1,4 @@
-import { EmbedBuilder, Locale, LocalizationMap, resolveColor } from 'discord.js';
+import { EmbedBuilder, Locale, resolveColor } from 'discord.js';
 import { Linguini, TypeMapper, TypeMappers, Utils } from 'linguini';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,17 +38,6 @@ export class Lang {
             this.linguini.getRef(location, langCode, variables) ??
             this.linguini.getRef(location, Language.Default, variables)
         );
-    }
-
-    public static getRefLocalizationMap(
-        location: string,
-        variables?: { [name: string]: string }
-    ): LocalizationMap {
-        let obj = {};
-        for (let langCode of Language.Enabled) {
-            obj[langCode] = this.getRef(location, langCode, variables);
-        }
-        return obj;
     }
 
     public static getCom(location: string, variables?: { [name: string]: string }): string {

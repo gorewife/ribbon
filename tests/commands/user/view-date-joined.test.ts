@@ -19,6 +19,18 @@ vi.mock('../../../src/utils/index.js', () => ({
     },
 }));
 
+vi.mock('../../../src/services/index.js', () => ({
+    Lang: {
+        getRef: vi.fn().mockImplementation((key: string) => {
+            const map: Record<string, string> = { 'userCommands.viewDateJoined': 'View Date Joined' };
+            return map[key] ?? key.split('.').pop() ?? key;
+        }),
+        getEmbed: vi.fn().mockImplementation((_loc: string, _lang: any, vars?: any) => ({
+            data: { description: `${vars?.TARGET} joined on ${vars?.DATE}!`, color: 39423 },
+        })),
+    },
+}));
+
 describe('ViewDateJoined', () => {
     let viewDateJoinedCommand: ViewDateJoined;
     let mockEventData: EventData;

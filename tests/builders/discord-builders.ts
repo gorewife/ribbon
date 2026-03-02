@@ -46,7 +46,18 @@ export function userBuilder(): UserBuilder {
     mockProp(user, 'displayName', user.globalName ?? user.username);
     mockProp(user, 'discriminator', '0');
     mockProp(user, 'bot', false);
-    user.send.mockResolvedValue({} as Message<false>);
+    // These methods are injected via discord.js mixins (Object.assign on prototype),
+    // so mockDeep leaves them as the original function. Override explicitly.
+    Object.defineProperty(user, 'displayAvatarURL', {
+        value: vi.fn().mockReturnValue(''),
+        writable: true,
+        configurable: true,
+    });
+    Object.defineProperty(user, 'send', {
+        value: vi.fn().mockResolvedValue({} as Message<false>),
+        writable: true,
+        configurable: true,
+    });
 
     // Set up toString method to return Discord mention format
     Object.defineProperty(user, 'toString', {
@@ -218,7 +229,11 @@ export function guildMemberBuilder(userId: string = 'user123'): GuildMemberBuild
     mockProp(member, 'guild', guildBuilderFactory().build());
     mockProp(member, 'nickname', null);
     mockProp(member, 'displayName', member.nickname ?? member.user.username); // Defaults to user's username
-    member.send.mockResolvedValue({} as Message<false>);
+    Object.defineProperty(member, 'send', {
+        value: vi.fn().mockResolvedValue({} as Message<false>),
+        writable: true,
+        configurable: true,
+    });
 
     // Properly mock the toString method
     // TODO: make this a helper function
@@ -232,8 +247,16 @@ export function guildMemberBuilder(userId: string = 'user123'): GuildMemberBuild
     // Explicitly initialize .cache to ensure it's a functional Collection
     (rolesMock as any).cache = new Collection<string, Role>();
     mockProp(rolesMock, 'highest', { position: 1, id: 'role1' } as any);
-    rolesMock.add.mockImplementation(async () => member as unknown as GuildMember);
-    rolesMock.remove.mockImplementation(async () => member as unknown as GuildMember);
+    Object.defineProperty(rolesMock, 'add', {
+        value: vi.fn().mockImplementation(async () => member as unknown as GuildMember),
+        writable: true,
+        configurable: true,
+    });
+    Object.defineProperty(rolesMock, 'remove', {
+        value: vi.fn().mockImplementation(async () => member as unknown as GuildMember),
+        writable: true,
+        configurable: true,
+    });
     mockProp(member, 'roles', rolesMock);
 
     const api: GuildMemberBuilder = {
@@ -332,11 +355,16 @@ export function textChannelBuilder(): TextChannelBuilder {
     mockProp(channel, 'name', 'test-channel');
     mockProp(channel, 'type', ChannelType.GuildText);
     channel.guild = guildBuilderFactory().build();
-    channel.send.mockResolvedValue({} as Message<true>);
-    channel.messages.fetchPins.mockResolvedValue({
-        size: 3,
-        filter: vi.fn().mockReturnValue([]),
-    } as any);
+    Object.defineProperty(channel, 'send', {
+        value: vi.fn().mockResolvedValue({} as Message<true>),
+        writable: true,
+        configurable: true,
+    });
+    Object.defineProperty(channel.messages, 'fetchPins', {
+        value: vi.fn().mockResolvedValue({ size: 3, filter: vi.fn().mockReturnValue([]) }),
+        writable: true,
+        configurable: true,
+    });
     setPermissions(channel, true); // default → bot **has** perms
     const api: TextChannelBuilder = {
         withId: (id: string) => {
@@ -400,7 +428,11 @@ export function dmChannelBuilder(): DMChannelBuilder {
     mockProp(channel, 'recipient', defaultRecipient);
 
     // Set up channel methods
-    channel.send.mockResolvedValue({} as Message<false>);
+    Object.defineProperty(channel, 'send', {
+        value: vi.fn().mockResolvedValue({} as Message<false>),
+        writable: true,
+        configurable: true,
+    });
 
     // Ensure instanceof check works for DMChannel
     Object.setPrototypeOf(channel, DMChannel.prototype);
@@ -477,9 +509,11 @@ export function messageBuilder(): MessageBuilder {
     mockProp(message, 'channel', textChannelBuilder().build());
     mockProp(message, 'guild', guildBuilderFactory().build());
 
-    message.startThread.mockResolvedValue({
-        id: 'mock-thread-id',
-    } as any);
+    Object.defineProperty(message, 'startThread', {
+        value: vi.fn().mockResolvedValue({ id: 'mock-thread-id' }),
+        writable: true,
+        configurable: true,
+    });
 
     const api: MessageBuilder = {
         withId: (id: string) => {
@@ -671,7 +705,9 @@ export function createMockRateLimiter(
     const rateLimiter = mockDeep<RateLimiter>();
     rateLimiter.amount = 1;
     rateLimiter.interval = 5000;
-    rateLimiter.take.mockReturnValue(false);
+    // RateLimiter.take is a class field (arrow function), not a prototype method —
+    // mockDeep doesn't intercept it, so we override explicitly.
+    (rateLimiter as any).take = vi.fn().mockReturnValue(false);
     Object.assign(rateLimiter, overrides);
     return rateLimiter;
 }
@@ -715,8 +751,16 @@ export function messageContextMenuInteractionBuilder(): MessageContextMenuIntera
     mockProp(interaction, 'targetMessage', targetMessage);
 
     // Set up interaction methods
-    interaction.editReply.mockResolvedValue({} as any);
-    interaction.followUp.mockResolvedValue({} as any);
+    Object.defineProperty(interaction, 'editReply', {
+        value: vi.fn().mockResolvedValue({}),
+        writable: true,
+        configurable: true,
+    });
+    Object.defineProperty(interaction, 'followUp', {
+        value: vi.fn().mockResolvedValue({}),
+        writable: true,
+        configurable: true,
+    });
 
     const api: MessageContextMenuInteractionBuilder = {
         withUser: u => {
@@ -780,8 +824,16 @@ export function userContextMenuInteractionBuilder(): UserContextMenuInteractionB
     mockProp(interaction, 'targetUser', targetUser);
 
     // Set up interaction methods
-    interaction.editReply.mockResolvedValue({} as any);
-    interaction.followUp.mockResolvedValue({} as any);
+    Object.defineProperty(interaction, 'editReply', {
+        value: vi.fn().mockResolvedValue({}),
+        writable: true,
+        configurable: true,
+    });
+    Object.defineProperty(interaction, 'followUp', {
+        value: vi.fn().mockResolvedValue({}),
+        writable: true,
+        configurable: true,
+    });
 
     const api: UserContextMenuInteractionBuilder = {
         withUser: u => {
@@ -822,7 +874,11 @@ export function userContextMenuInteractionBuilder(): UserContextMenuInteractionB
 // Utility Functions
 // -----------------------------------------------------------------------------
 function setPermissions(c: DeepMockProxy<TextChannel>, ok: boolean): void {
-    c.permissionsFor.mockReturnValue({ has: vi.fn().mockReturnValue(ok) } as any);
+    Object.defineProperty(c, 'permissionsFor', {
+        value: vi.fn().mockReturnValue({ has: vi.fn().mockReturnValue(ok) }),
+        writable: true,
+        configurable: true,
+    });
 }
 
 export function asPrototype<T extends object, P extends object>(obj: T, prototype: P): T {

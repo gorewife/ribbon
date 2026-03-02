@@ -16,6 +16,18 @@ vi.mock('../../../src/utils/index.js', () => ({
     },
 }));
 
+vi.mock('../../../src/services/index.js', () => ({
+    Lang: {
+        getRef: vi.fn().mockImplementation((key: string) => {
+            const map: Record<string, string> = { 'messageCommands.viewDateSent': 'View Date Sent' };
+            return map[key] ?? key.split('.').pop() ?? key;
+        }),
+        getEmbed: vi.fn().mockImplementation((_loc: string, _lang: any, vars?: any) => ({
+            data: { description: `This message was sent on ${vars?.DATE}!`, color: 39423 },
+        })),
+    },
+}));
+
 describe('ViewDateSent', () => {
     let viewDateSentCommand: ViewDateSent;
     let mockEventData: EventData;

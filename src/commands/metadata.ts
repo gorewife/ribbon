@@ -1,4 +1,5 @@
 import {
+    ApplicationCommandOptionType,
     ApplicationCommandType,
     PermissionFlagsBits,
     PermissionsBitField,
@@ -13,12 +14,40 @@ import { Lang } from '../services/index.js';
 export const ChatCommandMetadata: {
     [command: string]: RESTPostAPIChatInputApplicationCommandsJSONBody;
 } = {
+    AV: {
+        type: ApplicationCommandType.ChatInput,
+        name: Lang.getRef('chatCommands.av', Language.Default),
+        description: Lang.getRef('commandDescs.av', Language.Default),
+        dm_permission: true,
+        default_member_permissions: undefined,
+        options: [
+            {
+                name: 'user',
+                description: 'The user whose avatar to show. Defaults to you.',
+                type: ApplicationCommandOptionType.User,
+                required: false,
+            },
+        ],
+    },
+    GIF: {
+        type: ApplicationCommandType.ChatInput,
+        name: Lang.getRef('chatCommands.gif', Language.Default),
+        description: Lang.getRef('commandDescs.gif', Language.Default),
+        dm_permission: true,
+        default_member_permissions: undefined,
+        options: [
+            {
+                name: 'video',
+                description: 'The video to convert.',
+                type: ApplicationCommandOptionType.Attachment,
+                required: true,
+            },
+        ],
+    },
     DEV: {
         type: ApplicationCommandType.ChatInput,
         name: Lang.getRef('chatCommands.dev', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('chatCommands.dev'),
         description: Lang.getRef('commandDescs.dev', Language.Default),
-        description_localizations: Lang.getRefLocalizationMap('commandDescs.dev'),
         dm_permission: true,
         default_member_permissions: PermissionsBitField.resolve([
             PermissionFlagsBits.Administrator,
@@ -33,9 +62,7 @@ export const ChatCommandMetadata: {
     HELP: {
         type: ApplicationCommandType.ChatInput,
         name: Lang.getRef('chatCommands.help', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('chatCommands.help'),
         description: Lang.getRef('commandDescs.help', Language.Default),
-        description_localizations: Lang.getRefLocalizationMap('commandDescs.help'),
         dm_permission: true,
         default_member_permissions: undefined,
         options: [
@@ -48,9 +75,7 @@ export const ChatCommandMetadata: {
     INFO: {
         type: ApplicationCommandType.ChatInput,
         name: Lang.getRef('chatCommands.info', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('chatCommands.info'),
         description: Lang.getRef('commandDescs.info', Language.Default),
-        description_localizations: Lang.getRefLocalizationMap('commandDescs.info'),
         dm_permission: true,
         default_member_permissions: undefined,
         options: [
@@ -63,9 +88,7 @@ export const ChatCommandMetadata: {
     TEST: {
         type: ApplicationCommandType.ChatInput,
         name: Lang.getRef('chatCommands.test', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('chatCommands.test'),
         description: Lang.getRef('commandDescs.test', Language.Default),
-        description_localizations: Lang.getRefLocalizationMap('commandDescs.test'),
         dm_permission: true,
         default_member_permissions: undefined,
     },
@@ -77,7 +100,6 @@ export const MessageCommandMetadata: {
     VIEW_DATE_SENT: {
         type: ApplicationCommandType.Message,
         name: Lang.getRef('messageCommands.viewDateSent', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('messageCommands.viewDateSent'),
         default_member_permissions: undefined,
         dm_permission: true,
     },
@@ -89,7 +111,6 @@ export const UserCommandMetadata: {
     VIEW_DATE_JOINED: {
         type: ApplicationCommandType.User,
         name: Lang.getRef('userCommands.viewDateJoined', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('userCommands.viewDateJoined'),
         default_member_permissions: undefined,
         dm_permission: true,
     },

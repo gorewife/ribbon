@@ -5,4 +5,5 @@ export { GuildJoinHandler } from './guild-join-handler.js';
 export { GuildLeaveHandler } from './guild-leave-handler.js';
 export { ReactionHandler } from './reaction-handler.js';
 export { MessageHandler } from './message-handler.js';
+export { PrefixCommandHandler } from './prefix-handler.js';
 export { TriggerHandler } from './trigger-handler.js';

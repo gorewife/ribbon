@@ -13,6 +13,13 @@ vi.mock('../../../src/utils/index.js', () => ({
     },
 }));
 
+vi.mock('../../../src/services/index.js', () => ({
+    Lang: {
+        getRef: vi.fn().mockImplementation((key: string) => key.split('.').pop() ?? key),
+        getEmbed: vi.fn().mockReturnValue({ data: { description: 'Test command works!', color: 39423 } }),
+    },
+}));
+
 describe('TestCommand', () => {
     let testCommand: TestCommand;
     let mockEventData: EventData;

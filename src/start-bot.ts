@@ -3,7 +3,7 @@ import { Options, Partials } from 'discord.js';
 import { createRequire } from 'node:module';
 
 import { Button } from './buttons/index.js';
-import { DevCommand, HelpCommand, InfoCommand, TestCommand } from './commands/chat/index.js';
+import { AvCommand, DevCommand, GifCommand, HelpCommand, InfoCommand, TestCommand } from './commands/chat/index.js';
 import {
     ChatCommandMetadata,
     Command,
@@ -11,6 +11,7 @@ import {
     UserCommandMetadata,
 } from './commands/index.js';
 import { ViewDateSent } from './commands/message/index.js';
+import { GifPrefixCommand, PalePrefixCommand, PrefixCommand } from './commands/prefix/index.js';
 import { ViewDateJoined } from './commands/user/index.js';
 import {
     ButtonHandler,
@@ -18,6 +19,7 @@ import {
     GuildJoinHandler,
     GuildLeaveHandler,
     MessageHandler,
+    PrefixCommandHandler,
     ReactionHandler,
     TriggerHandler,
 } from './events/index.js';
@@ -57,7 +59,9 @@ async function start(): Promise<void> {
     // Commands
     let commands: Command[] = [
         // Chat Commands
+        new AvCommand(),
         new DevCommand(),
+        new GifCommand(),
         new HelpCommand(),
         new InfoCommand(),
         new TestCommand(),
@@ -86,13 +90,21 @@ async function start(): Promise<void> {
         // TODO: Add new triggers here
     ];
 
+    // Prefix commands
+    let prefixCommands: PrefixCommand[] = [
+        new GifPrefixCommand(),
+        new PalePrefixCommand(),
+        // TODO: Add new prefix commands here
+    ];
+
     // Event handlers
     let guildJoinHandler = new GuildJoinHandler(eventDataService);
     let guildLeaveHandler = new GuildLeaveHandler();
     let commandHandler = new CommandHandler(commands, eventDataService);
     let buttonHandler = new ButtonHandler(buttons, eventDataService);
     let triggerHandler = new TriggerHandler(triggers, eventDataService);
-    let messageHandler = new MessageHandler(triggerHandler);
+    let prefixCommandHandler = new PrefixCommandHandler(prefixCommands, eventDataService);
+    let messageHandler = new MessageHandler(triggerHandler, prefixCommandHandler);
     let reactionHandler = new ReactionHandler(reactions, eventDataService);
 
     // Jobs

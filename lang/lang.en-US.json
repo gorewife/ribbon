@@ -189,7 +189,9 @@
             "description": "{{REF:links.templateEmbed}} helps give developers a starting point for new Discord bots, so that much of the initial setup can be avoided and developers can instead focus on meaningful bot features."
         },
         "chatCommands": {
+            "av": "av",
             "dev": "dev",
+            "gif": "gif",
             "help": "help",
             "info": "info",
             "test": "test"
@@ -205,7 +207,9 @@
             "option": "option"
         },
         "commandDescs": {
+            "av": "Get a user's avatar.",
             "dev": "Developer use only.",
+            "gif": "Convert a video to a GIF.",
             "help": "Find help or contact support.",
             "info": "View bot info.",
             "test": "Run the test command."
