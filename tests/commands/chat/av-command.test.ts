@@ -10,6 +10,17 @@ vi.mock('../../../src/utils/index.js', () => ({
     InteractionUtils: {
         send: vi.fn().mockResolvedValue({}),
     },
+    createEmbed: (description?: string) => {
+        const data: any = { color: 0xffd1e1, footer: { text: '✦ ✦ ✦' } };
+        if (description) data.description = description;
+        const embed: any = {
+            data,
+            setTitle: (t: string) => { data.title = t; return embed; },
+            setImage: (u: string) => { data.image = { url: u }; return embed; },
+            setDescription: (d: string) => { data.description = d; return embed; },
+        };
+        return embed;
+    },
 }));
 
 vi.mock('../../../src/services/index.js', () => ({
@@ -56,7 +67,7 @@ describe('AvCommand', () => {
                 interaction,
                 expect.objectContaining({
                     data: expect.objectContaining({
-                        title: "InvokerUser's avatar",
+                        title: `InvokerUser's avatar`,
                         image: { url: 'https://cdn.discordapp.com/avatars/invoker123/hash.png' },
                     }),
                 })
@@ -84,7 +95,7 @@ describe('AvCommand', () => {
                 interaction,
                 expect.objectContaining({
                     data: expect.objectContaining({
-                        title: "TargetUser's avatar",
+                        title: `TargetUser's avatar`,
                         image: { url: 'https://cdn.discordapp.com/avatars/target456/hash.png' },
                     }),
                 })

@@ -11,7 +11,7 @@ import { EventData } from '../models/internal-models.js';
 
 export class EventDataService {
     public async create(
-        options: {
+        _options: {
             user?: User;
             channel?: Channel | PartialDMChannel;
             guild?: Guild;

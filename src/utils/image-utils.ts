@@ -27,8 +27,10 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
 
         try {
             await execFileAsync('ffmpeg', [
-                '-i', inputPath,
-                '-vf', 'hue=s=0.25,eq=brightness=0.1:contrast=0.6',
+                '-i',
+                inputPath,
+                '-vf',
+                'scale=iw*0.18:ih*0.18:flags=neighbor,scale=iw:ih:flags=neighbor,eq=saturation=0.18:brightness=0.06:contrast=0.75:gamma=1.05',
                 outputPath,
             ]);
         } catch {

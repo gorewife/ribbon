@@ -38,7 +38,7 @@ export const ChatCommandMetadata: {
         options: [
             {
                 name: 'video',
-                description: 'The video to convert.',
+                description: 'The video or image to convert.',
                 type: ApplicationCommandOptionType.Attachment,
                 required: true,
             },

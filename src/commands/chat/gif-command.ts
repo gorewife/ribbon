@@ -10,7 +10,7 @@ import { rm } from 'node:fs/promises';
 import { Language } from '../../models/enum-helpers/index.js';
 import { EventData } from '../../models/internal-models.js';
 import { Lang } from '../../services/index.js';
-import { InteractionUtils, videoToGif } from '../../utils/index.js';
+import { createEmbed, InteractionUtils, videoToGif } from '../../utils/index.js';
 import { Command, CommandDeferType } from '../index.js';
 
 export class GifCommand implements Command {
@@ -21,8 +21,11 @@ export class GifCommand implements Command {
     public async execute(intr: ChatInputCommandInteraction, _data: EventData): Promise<void> {
         const attachment = intr.options.getAttachment('video', true);
 
-        if (!attachment.contentType?.startsWith('video/')) {
-            await InteractionUtils.send(intr, 'Please attach a video file.');
+        const isVideo = attachment.contentType?.startsWith('video/');
+        const isImage = attachment.contentType?.startsWith('image/');
+
+        if (!isVideo && !isImage) {
+            await InteractionUtils.send(intr, createEmbed('Please attach a video or image file.'));
             return;
         }
 
@@ -30,12 +33,13 @@ export class GifCommand implements Command {
         const result = await videoToGif(attachment.url, ext);
 
         if ('error' in result) {
-            await InteractionUtils.send(intr, result.error);
+            await InteractionUtils.send(intr, createEmbed(result.error));
             return;
         }
 
         try {
             await InteractionUtils.send(intr, {
+                embeds: [createEmbed().setImage('attachment://output.gif')],
                 files: [new AttachmentBuilder(result.path, { name: 'output.gif' })],
             });
         } catch (error) {
@@ -43,7 +47,12 @@ export class GifCommand implements Command {
                 error instanceof DiscordAPIError &&
                 error.code === RESTJSONErrorCodes.RequestEntityTooLarge
             ) {
-                await InteractionUtils.send(intr, 'The resulting GIF is too large to upload. Try a shorter or lower-resolution video.');
+                await InteractionUtils.send(
+                    intr,
+                    createEmbed(
+                        'The resulting GIF is too large to upload. Try a shorter or lower-resolution video.'
+                    )
+                );
             } else {
                 throw error;
             }

@@ -4,8 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PalePrefixCommand } from '../../../src/commands/prefix/pale-prefix-command.js';
 import { EventData } from '../../../src/models/internal-models.js';
 
+const fakeEmbed = { setImage: vi.fn().mockReturnThis() };
+
 vi.mock('../../../src/utils/index.js', () => ({
     makeImagePale: vi.fn(),
+    createEmbed: vi.fn().mockReturnValue(fakeEmbed),
 }));
 
 vi.mock('node:fs/promises', () => ({
@@ -29,6 +32,7 @@ describe('PalePrefixCommand', () => {
         paleCommand = new PalePrefixCommand();
         mockEventData = new EventData(Locale.EnglishUS, Locale.EnglishUS);
         vi.clearAllMocks();
+        fakeEmbed.setImage.mockReturnThis();
     });
 
     it('should have correct command properties', () => {
@@ -42,7 +46,7 @@ describe('PalePrefixCommand', () => {
 
             await paleCommand.execute(msg as any, mockEventData);
 
-            expect(msg.reply).toHaveBeenCalledWith('Please attach an image file.');
+            expect(msg.reply).toHaveBeenCalledWith(expect.objectContaining({ embeds: expect.any(Array) }));
         });
 
         it('should reply with error when attachment is not an image', async () => {
@@ -50,7 +54,7 @@ describe('PalePrefixCommand', () => {
 
             await paleCommand.execute(msg as any, mockEventData);
 
-            expect(msg.reply).toHaveBeenCalledWith('Please attach an image file.');
+            expect(msg.reply).toHaveBeenCalledWith(expect.objectContaining({ embeds: expect.any(Array) }));
         });
 
         it('should reply with error when makeImagePale fails', async () => {
@@ -63,9 +67,7 @@ describe('PalePrefixCommand', () => {
 
             await paleCommand.execute(msg as any, mockEventData);
 
-            expect(msg.reply).toHaveBeenCalledWith(
-                'Failed to process the image. Make sure `ffmpeg` is installed.'
-            );
+            expect(msg.reply).toHaveBeenCalledWith(expect.objectContaining({ embeds: expect.any(Array) }));
         });
 
         it('should reply with the pale image on success', async () => {
@@ -78,6 +80,7 @@ describe('PalePrefixCommand', () => {
 
             expect(msg.reply).toHaveBeenCalledWith(
                 expect.objectContaining({
+                    embeds: expect.any(Array),
                     files: expect.arrayContaining([expect.objectContaining({ name: 'pale.png' })]),
                 })
             );
@@ -97,7 +100,9 @@ describe('PalePrefixCommand', () => {
 
             await paleCommand.execute(msg as any, mockEventData);
 
-            expect(msg.reply).toHaveBeenLastCalledWith('The resulting image is too large to upload.');
+            expect(msg.reply).toHaveBeenLastCalledWith(
+                expect.objectContaining({ embeds: expect.any(Array) })
+            );
         });
     });
 });

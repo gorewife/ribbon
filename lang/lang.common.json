@@ -1,7 +1,7 @@
 {
     "bot": {
-        "name": "My Bot",
-        "author": "My Name"
+        "name": "ribbon",
+        "author": "hystericca"
     },
     "emojis": {
         "yes": "✅",
@@ -17,21 +17,19 @@
         "refresh": "🔄"
     },
     "colors": {
-        "default": "#0099ff",
+        "default": "#ffd1e1",
         "success": "#00ff83",
         "warning": "#ffcc66",
         "error": "#ff4a4a"
     },
     "links": {
-        "author": "https://github.com/",
-        "docs": "https://top.gg/",
-        "donate": "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EW389DYYSS4FC",
-        "invite": "https://discord.com/",
-        "source": "https://github.com/",
-        "stream": "https://www.twitch.tv/novakevin",
+        "author": "https://github.com/gorewife",
+        "docs": "https://github.com/gorewife/vivix",
+        "invite": "https://discord.com/oauth2/authorize?client_id=1477882164518453268&permissions=8&integration_type=0&scope=bot+applications.commands",
+        "source": "https://github.com/gorewife/vivix",
         "support": "https://support.discord.com/",
         "template": "https://github.com/KevinNovak/Discord-Bot-TypeScript-Template",
-        "terms": "https://github.com/KevinNovak/Discord-Bot-TypeScript-Template/blob/master/LEGAL.md#terms-of-service",
+        "terms": "https://github.com/gorewife/vivix/LEGAL.md#terms-of-service",
         "vote": "https://top.gg/"
     }
 }

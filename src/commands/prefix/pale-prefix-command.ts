@@ -1,9 +1,9 @@
 import { AttachmentBuilder, DiscordAPIError, Message, RESTJSONErrorCodes } from 'discord.js';
 import { rm } from 'node:fs/promises';
 
-import { EventData } from '../../models/internal-models.js';
-import { makeImagePale } from '../../utils/index.js';
 import { PrefixCommand } from './prefix-command.js';
+import { EventData } from '../../models/internal-models.js';
+import { createEmbed, makeImagePale } from '../../utils/index.js';
 
 export class PalePrefixCommand implements PrefixCommand {
     public prefix = ',pale';
@@ -13,19 +13,20 @@ export class PalePrefixCommand implements PrefixCommand {
         const attachment = msg.attachments.first();
 
         if (!attachment?.contentType?.startsWith('image/')) {
-            await msg.reply('Please attach an image file.');
+            await msg.reply({ embeds: [createEmbed('Please attach an image file.')] });
             return;
         }
 
         const result = await makeImagePale(attachment.url);
 
         if ('error' in result) {
-            await msg.reply(result.error);
+            await msg.reply({ embeds: [createEmbed(result.error)] });
             return;
         }
 
         try {
             await msg.reply({
+                embeds: [createEmbed().setImage('attachment://pale.png')],
                 files: [new AttachmentBuilder(result.path, { name: 'pale.png' })],
             });
         } catch (error) {
@@ -33,7 +34,9 @@ export class PalePrefixCommand implements PrefixCommand {
                 error instanceof DiscordAPIError &&
                 error.code === RESTJSONErrorCodes.RequestEntityTooLarge
             ) {
-                await msg.reply('The resulting image is too large to upload.');
+                await msg.reply({
+                    embeds: [createEmbed('The resulting image is too large to upload.')],
+                });
             } else {
                 throw error;
             }
