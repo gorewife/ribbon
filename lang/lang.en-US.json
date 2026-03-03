@@ -14,7 +14,7 @@
                         "value": ["{{REF:links.docsEmbed}}", "{{REF:links.supportEmbed}}"]
                     }
                 ],
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "݁                             ˖                     ݁" }
             },
             "helpContactSupport": {
                 "title": "Help - {{REF:helpOptions.contactSupport}}",
@@ -27,7 +27,7 @@
                         "value": ["{{REF:links.supportEmbed}}"]
                     }
                 ],
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "݁                             ˖                     ݁" }
             },
             "helpCommands": {
                 "title": "Help - {{REF:helpOptions.commands}}",
@@ -52,19 +52,19 @@
                         "value": ["{{REF:links.docsEmbed}}", "{{REF:links.supportEmbed}}"]
                     }
                 ],
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "test": {
                 "description": "Test command works!",
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "viewDateJoined": {
                 "description": "{{TARGET}} joined on {{DATE}}!",
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "viewDateSent": {
                 "description": "This message was sent on {{DATE}}!",
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "about": {
                 "title": "{{COM:bot.name}} - About",
@@ -88,12 +88,12 @@
                         "value": ["{{REF:links.templateEmbed}}"]
                     }
                 ],
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "translate": {
                 "title": "{{COM:bot.name}} - Translations",
                 "description": "Thank you to our translators who have made it possible for {{COM:bot.name}} to be used in the following languages. If you are interested in providing a translation, please contact the staff in our [support server]({{COM:links.support}}).",
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             },
             "devInfo": {
                 "title": "{{COM:bot.name}} - Developer Info",
@@ -133,7 +133,7 @@
                         ]
                     }
                 ],
-                "footer": { "text": "✦ ✦ ✦" }
+                "footer": { "text": "                             ˖                     ݁" }
             }
         },
         "validationEmbeds": {
