@@ -1,8 +1,10 @@
 # Folders
 /.cache
 /.git
+/config
 /dist
 /docs
+/logs
 /misc
 /node_modules
 /temp

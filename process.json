@@ -1,10 +1,19 @@
 {
     "apps": [
         {
-            "name": "my-bot",
+            "name": "ribbon",
             "script": "dist/start-manager.js",
-            "node_args": ["--enable-source-maps"],
-            "restart_delay": 10000
+            "interpreter": "node",
+            "interpreter_args": "--enable-source-maps",
+            "autorestart": true,
+            "watch": false,
+            "max_restarts": 10,
+            "restart_delay": 10000,
+            "exp_backoff_restart_delay": 100,
+            "error_file": "./logs/pm2-error.log",
+            "out_file": "./logs/pm2-out.log",
+            "merge_logs": true,
+            "time": true
         }
     ]
 }
