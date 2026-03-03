@@ -83,55 +83,37 @@ export async function videoToGif(url: string, ext: string): Promise<GifResult> {
     const outputPath = join(tmpdir(), `vivix-${id}.gif`);
     let committed = false;
 
-    const isImage = ['png', 'jpg', 'jpeg', 'webp'].includes(ext.toLowerCase());
+    try {
+        const res = await fetch(url);
+        if (!res.ok) return { error: 'Failed to download the video.' };
+        await writeFile(inputPath, Buffer.from(await res.arrayBuffer()));
 
-    if (isImage) {
-        await execFileAsync('ffmpeg', [
-            '-loop',
-            '1',
-            '-t',
-            '3',
-            '-i',
-            inputPath,
-            '-vf',
-            `fps=10,scale=320:-1:flags=lanczos`,
-            '-loop',
-            '0',
-            outputPath,
-        ]);
-        return { path: outputPath };
-    } else
+        const info = await probeVideo(inputPath);
+        const { fps, scale } = info
+            ? (pickSettings(info.duration, info.width, info.height) ?? {
+                  fps: MIN_FPS,
+                  scale: MIN_SCALE,
+              })
+            : { fps: 6, scale: 240 }; // ffprobe unavailable — safe fallback
+
         try {
-            const res = await fetch(url);
-            if (!res.ok) return { error: 'Failed to download the video.' };
-            await writeFile(inputPath, Buffer.from(await res.arrayBuffer()));
-
-            const info = await probeVideo(inputPath);
-            const { fps, scale } = info
-                ? (pickSettings(info.duration, info.width, info.height) ?? {
-                      fps: MIN_FPS,
-                      scale: MIN_SCALE,
-                  })
-                : { fps: 6, scale: 240 }; // ffprobe unavailable — safe fallback
-
-            try {
-                await execFileAsync('ffmpeg', [
-                    '-i',
-                    inputPath,
-                    '-vf',
-                    `fps=${fps},scale=${scale}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`,
-                    '-loop',
-                    '0',
-                    outputPath,
-                ]);
-            } catch {
-                return { error: 'Conversion failed. Make sure `ffmpeg` is installed.' };
-            }
-
-            committed = true;
-            return { path: outputPath };
-        } finally {
-            await rm(inputPath, { force: true });
-            if (!committed) await rm(outputPath, { force: true });
+            await execFileAsync('ffmpeg', [
+                '-i',
+                inputPath,
+                '-vf',
+                `fps=${fps},scale=${scale}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`,
+                '-loop',
+                '0',
+                outputPath,
+            ]);
+        } catch {
+            return { error: 'Conversion failed. Make sure `ffmpeg` is installed.' };
         }
+
+        committed = true;
+        return { path: outputPath };
+    } finally {
+        await rm(inputPath, { force: true });
+        if (!committed) await rm(outputPath, { force: true });
+    }
 }
