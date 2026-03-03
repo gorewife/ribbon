@@ -26,9 +26,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
             set -e
             cd ${{ secrets.DEPLOY_PATH }}
             git pull origin master
             bun install --frozen-lockfile
             bun run build
-            pm2 restart process.json --update-env
+            ./node_modules/.bin/pm2 restart process.json --update-env
