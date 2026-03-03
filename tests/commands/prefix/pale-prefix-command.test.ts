@@ -4,11 +4,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PalePrefixCommand } from '../../../src/commands/prefix/pale-prefix-command.js';
 import { EventData } from '../../../src/models/internal-models.js';
 
-const fakeEmbed = { setImage: vi.fn().mockReturnThis() };
-
+// createEmbed is called then .setImage() is chained — return a self-referencing stub inline
+// so no module-level variables are closed over (vi.mock is hoisted before any const declarations)
 vi.mock('../../../src/utils/index.js', () => ({
     makeImagePale: vi.fn(),
-    createEmbed: vi.fn().mockReturnValue(fakeEmbed),
+    createEmbed: vi.fn(() => {
+        const embed: any = { setImage: vi.fn().mockReturnThis() };
+        return embed;
+    }),
 }));
 
 vi.mock('node:fs/promises', () => ({
@@ -32,7 +35,6 @@ describe('PalePrefixCommand', () => {
         paleCommand = new PalePrefixCommand();
         mockEventData = new EventData(Locale.EnglishUS, Locale.EnglishUS);
         vi.clearAllMocks();
-        fakeEmbed.setImage.mockReturnThis();
     });
 
     it('should have correct command properties', () => {
