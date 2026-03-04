@@ -6,18 +6,29 @@ import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 
+const PALE_SIZE = 120;
+const PALE_CURVES =
+    // eslint-disable-next-line quotes
+    "curves=r='0/40 128/148 255/220':g='0/30 128/130 255/210':b='0/15 128/120 255/195'";
+const PALE_HUE = 'hue=s=0.65';
+const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=decrease:flags=lanczos`;
+const PALETTE_FILTER =
+    'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
+
 type ImageResult = { path: string } | { error: string };
 
 /**
- * Downloads an image from `url`, applies a pale/washed-out filter, and returns the output path.
- * The caller is responsible for deleting the returned path after use.
- * On failure, all temp files are cleaned up internally and an error string is returned.
+ * Downloads an image from `url`, applies an instagram ass filter
+ * fit within 120×120. GIF inputs are output as animated GIFs; everything else as PNG
+ * The caller is responsible for deleting the returned path after use also
  */
 export async function makeImagePale(url: string): Promise<ImageResult> {
     const id = crypto.randomUUID();
     const ext = new URL(url).pathname.split('.').pop()?.toLowerCase() ?? 'png';
+    const isGif = ext === 'gif';
     const inputPath = join(tmpdir(), `vivix-${id}.${ext}`);
-    const outputPath = join(tmpdir(), `vivix-${id}-pale.png`);
+    const outputExt = isGif ? 'gif' : 'png';
+    const outputPath = join(tmpdir(), `vivix-${id}-pale.${outputExt}`);
     let committed = false;
 
     try {
@@ -26,13 +37,21 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
         await writeFile(inputPath, Buffer.from(await res.arrayBuffer()));
 
         try {
-            await execFileAsync('ffmpeg', [
-                '-i',
-                inputPath,
-                '-vf',
-                'scale=iw*0.18:ih*0.18:flags=neighbor,scale=iw:ih:flags=neighbor,eq=saturation=0.18:brightness=0.06:contrast=0.75:gamma=1.05',
-                outputPath,
-            ]);
+            if (isGif) {
+                const filter = `${SCALE_FILTER},${PALE_CURVES},${PALE_HUE},${PALETTE_FILTER}`;
+                await execFileAsync('ffmpeg', [
+                    '-i',
+                    inputPath,
+                    '-vf',
+                    filter,
+                    '-loop',
+                    '0',
+                    outputPath,
+                ]);
+            } else {
+                const filter = `${SCALE_FILTER},${PALE_CURVES},${PALE_HUE}`;
+                await execFileAsync('ffmpeg', ['-i', inputPath, '-vf', filter, outputPath]);
+            }
         } catch {
             return { error: 'Failed to process the image. Make sure `ffmpeg` is installed.' };
         }
