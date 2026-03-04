@@ -1,4 +1,5 @@
 import {
+    Attachment,
     AttachmentBuilder,
     DiscordAPIError,
     Message,
@@ -10,18 +11,38 @@ import { PrefixCommand } from './prefix-command.js';
 import { EventData } from '../../models/internal-models.js';
 import { createEmbed, videoToGif } from '../../utils/index.js';
 
+async function resolveMedia(msg: Message): Promise<Attachment | null> {
+    const own = msg.attachments.first();
+    if (own) return own;
+
+    if (msg.reference?.messageId) {
+        try {
+            const ref = await msg.fetchReference();
+            const refAttachment = ref.attachments.first();
+            if (refAttachment) return refAttachment;
+        } catch {
+            // fetch failed, fall through
+        }
+    }
+
+    const prev = await msg.channel.messages.fetch({ before: msg.id, limit: 1 });
+    return prev.first()?.attachments.first() ?? null;
+}
+
 export class GifPrefixCommand implements PrefixCommand {
     public prefix = ',gif';
     public requireGuild = false;
 
     public async execute(msg: Message, _data: EventData): Promise<void> {
-        const attachment = msg.attachments.first();
+        const attachment = await resolveMedia(msg);
 
         const isVideo = attachment?.contentType?.startsWith('video/');
         const isImage = attachment?.contentType?.startsWith('image/');
 
-        if (!isVideo && !isImage) {
-            await msg.reply({ embeds: [createEmbed('Please attach a video or image file.')] });
+        if (!attachment || (!isVideo && !isImage)) {
+            await msg.reply({
+                embeds: [createEmbed('Please attach a video or image file, or reply to one.')],
+            });
             return;
         }
 

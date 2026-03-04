@@ -1,19 +1,39 @@
-import { AttachmentBuilder, DiscordAPIError, Message, RESTJSONErrorCodes } from 'discord.js';
+import { Attachment, AttachmentBuilder, DiscordAPIError, Message, RESTJSONErrorCodes } from 'discord.js';
 import { rm } from 'node:fs/promises';
 
 import { PrefixCommand } from './prefix-command.js';
 import { EventData } from '../../models/internal-models.js';
 import { createEmbed, makeImagePale } from '../../utils/index.js';
 
+async function resolveMedia(msg: Message): Promise<Attachment | null> {
+    const own = msg.attachments.first();
+    if (own) return own;
+
+    if (msg.reference?.messageId) {
+        try {
+            const ref = await msg.fetchReference();
+            const refAttachment = ref.attachments.first();
+            if (refAttachment) return refAttachment;
+        } catch {
+            // fetch failed, fall through
+        }
+    }
+
+    const prev = await msg.channel.messages.fetch({ before: msg.id, limit: 1 });
+    return prev.first()?.attachments.first() ?? null;
+}
+
 export class PalePrefixCommand implements PrefixCommand {
     public prefix = ',pale';
     public requireGuild = false;
 
     public async execute(msg: Message, _data: EventData): Promise<void> {
-        const attachment = msg.attachments.first();
+        const attachment = await resolveMedia(msg);
 
         if (!attachment?.contentType?.startsWith('image/')) {
-            await msg.reply({ embeds: [createEmbed('Please attach an image or GIF file.')] });
+            await msg.reply({
+                embeds: [createEmbed('Please attach an image or GIF file, or reply to one.')],
+            });
             return;
         }
 
