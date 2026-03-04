@@ -13,7 +13,7 @@ export class PalePrefixCommand implements PrefixCommand {
         const attachment = msg.attachments.first();
 
         if (!attachment?.contentType?.startsWith('image/')) {
-            await msg.reply({ embeds: [createEmbed('Please attach an image file.')] });
+            await msg.reply({ embeds: [createEmbed('Please attach an image or GIF file.')] });
             return;
         }
 
@@ -24,10 +24,11 @@ export class PalePrefixCommand implements PrefixCommand {
             return;
         }
 
+        const filename = `pale.${result.path.endsWith('.gif') ? 'gif' : 'png'}`;
         try {
             await msg.reply({
-                embeds: [createEmbed().setImage('attachment://pale.png')],
-                files: [new AttachmentBuilder(result.path, { name: 'pale.png' })],
+                embeds: [createEmbed().setImage(`attachment://${filename}`)],
+                files: [new AttachmentBuilder(result.path, { name: filename })],
             });
         } catch (error) {
             if (
