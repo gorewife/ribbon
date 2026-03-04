@@ -9,8 +9,8 @@ const execFileAsync = promisify(execFile);
 const PALE_SIZE = 120;
 const PALE_CURVES =
     // eslint-disable-next-line quotes
-    "curves=r='0/0.16 0.5/0.58 1/0.86':g='0/0.12 0.5/0.51 1/0.82':b='0/0.06 0.5/0.47 1/0.76'";
-const PALE_HUE = 'hue=s=0.65';
+    "curves=r='0/0.18 0.5/0.65 1/0.90':g='0/0.17 0.5/0.64 1/0.89':b='0/0.15 0.5/0.62 1/0.88'";
+const PALE_HUE = 'hue=s=0.14';
 const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=decrease:flags=lanczos`;
 const PALETTE_FILTER =
     'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
