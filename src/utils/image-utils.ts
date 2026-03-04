@@ -7,8 +7,8 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const PALE_SIZE = 120;
-const PALE_FILTER = 'eq=brightness=0.08:contrast=0.82:saturation=0.14';
-const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=decrease:flags=lanczos`;
+const PALE_FILTER = 'eq=brightness=0.10:contrast=0.80:saturation=0.05';
+const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=increase:flags=lanczos,crop=${PALE_SIZE}:${PALE_SIZE}`;
 const PALETTE_FILTER =
     'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
 
