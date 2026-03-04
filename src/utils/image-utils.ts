@@ -7,10 +7,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const PALE_SIZE = 120;
-const PALE_CURVES =
-    // eslint-disable-next-line quotes
-    "curves=r='0/0.18 0.5/0.65 1/0.90':g='0/0.17 0.5/0.64 1/0.89':b='0/0.15 0.5/0.62 1/0.88'";
-const PALE_HUE = 'hue=s=0.14';
+const PALE_FILTER = 'eq=brightness=0.08:contrast=0.82:saturation=0.14';
 const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=decrease:flags=lanczos`;
 const PALETTE_FILTER =
     'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
@@ -18,9 +15,9 @@ const PALETTE_FILTER =
 type ImageResult = { path: string } | { error: string };
 
 /**
- * Downloads an image from `url`, applies an instagram ass filter
- * fit within 120×120. GIF inputs are output as animated GIFs; everything else as PNG
- * The caller is responsible for deleting the returned path after use also
+ * Downloads an image from `url`, applies a pale/faded filter and scales it to fit within
+ * 120×120. GIF inputs are output as animated GIFs; everything else as PNG.
+ * The caller is responsible for deleting the returned path after use.
  */
 export async function makeImagePale(url: string): Promise<ImageResult> {
     const id = crypto.randomUUID();
@@ -38,7 +35,7 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
 
         try {
             if (isGif) {
-                const filter = `${SCALE_FILTER},${PALE_CURVES},${PALE_HUE},${PALETTE_FILTER}`;
+                const filter = `${SCALE_FILTER},${PALE_FILTER},${PALETTE_FILTER}`;
                 await execFileAsync('ffmpeg', [
                     '-i',
                     inputPath,
@@ -49,7 +46,7 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
                     outputPath,
                 ]);
             } else {
-                const filter = `${SCALE_FILTER},${PALE_CURVES},${PALE_HUE}`;
+                const filter = `${SCALE_FILTER},${PALE_FILTER}`;
                 await execFileAsync('ffmpeg', ['-i', inputPath, '-vf', filter, outputPath]);
             }
         } catch {
