@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 
 const EMBED_COLOR = 0xffd1e1;
-const EMBED_FOOTER = '݁                             ˖                     ݁';
+const EMBED_FOOTER = '˖                        ۪                             ⊹';
 
 // creates an embed duh
 export function createEmbed(description?: string): EmbedBuilder {
