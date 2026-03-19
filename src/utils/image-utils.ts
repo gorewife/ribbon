@@ -7,7 +7,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const PALE_SIZE = 120;
-const PALE_FILTER = 'eq=brightness=0.10:contrast=0.80:saturation=0.05';
+const PALE_FILTER = 'eq=brightness=0.10:contrast=0.80:saturation=0.35';
 const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=increase:flags=lanczos,crop=${PALE_SIZE}:${PALE_SIZE}`;
 const PALETTE_FILTER =
     'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
@@ -50,7 +50,7 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
                 await execFileAsync('ffmpeg', ['-i', inputPath, '-vf', filter, outputPath]);
             }
         } catch {
-            return { error: 'Failed to process the image. Make sure `ffmpeg` is installed.' };
+            return { error: 'FFmpeg failed to process the image.' };
         }
 
         committed = true;
