@@ -7,7 +7,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const PALE_SIZE = 120;
-const PALE_FILTER = 'eq=brightness=0.10:contrast=0.80:saturation=0.35';
+const LUT_PATH = join(process.cwd(), 'assets/pale-lut.png');
 const SCALE_FILTER = `scale=${PALE_SIZE}:${PALE_SIZE}:force_original_aspect_ratio=increase:flags=lanczos,crop=${PALE_SIZE}:${PALE_SIZE}`;
 const PALETTE_FILTER =
     'split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
@@ -15,7 +15,7 @@ const PALETTE_FILTER =
 type ImageResult = { path: string } | { error: string };
 
 /**
- * Downloads an image from `url`, applies a pale/faded filter and scales it to fit within
+ * Downloads an image from `url`, applies the pale LUT and scales it to fit within
  * 120×120. GIF inputs are output as animated GIFs; everything else as PNG.
  * The caller is responsible for deleting the returned path after use.
  */
@@ -35,19 +35,22 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
 
         try {
             if (isGif) {
-                const filter = `${SCALE_FILTER},${PALE_FILTER},${PALETTE_FILTER}`;
+                const filter = `[0]${SCALE_FILTER}[scaled];[scaled][1]haldclut[colored];[colored]${PALETTE_FILTER}`;
                 await execFileAsync('ffmpeg', [
-                    '-i',
-                    inputPath,
-                    '-vf',
-                    filter,
-                    '-loop',
-                    '0',
+                    '-i', inputPath,
+                    '-i', LUT_PATH,
+                    '-filter_complex', filter,
+                    '-loop', '0',
                     outputPath,
                 ]);
             } else {
-                const filter = `${SCALE_FILTER},${PALE_FILTER}`;
-                await execFileAsync('ffmpeg', ['-i', inputPath, '-vf', filter, outputPath]);
+                const filter = `[0]${SCALE_FILTER}[scaled];[scaled][1]haldclut`;
+                await execFileAsync('ffmpeg', [
+                    '-i', inputPath,
+                    '-i', LUT_PATH,
+                    '-filter_complex', filter,
+                    outputPath,
+                ]);
             }
         } catch {
             return { error: 'FFmpeg failed to process the image.' };
