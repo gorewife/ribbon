@@ -52,7 +52,8 @@ export async function makeImagePale(url: string): Promise<ImageResult> {
                     outputPath,
                 ]);
             }
-        } catch {
+        } catch (err) {
+            console.error('FFmpeg error:', err);
             return { error: 'FFmpeg failed to process the image.' };
         }
 
